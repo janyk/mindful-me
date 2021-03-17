@@ -1,6 +1,6 @@
-import type { AWS } from '@serverless/typescript';
+import type { AWS } from '@serverless/typescript'
 
-import hello from '@functions/hello';
+import hello from '@functions/hello'
 
 const serverlessConfiguration: AWS = {
   service: 'mindful-me',
@@ -26,6 +26,6 @@ const serverlessConfiguration: AWS = {
   },
   // import the function via paths
   functions: { hello },
-};
+}
 
-module.exports = serverlessConfiguration;
+module.exports = serverlessConfiguration
