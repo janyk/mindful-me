@@ -14,3 +14,6 @@ jspm_packages
 
 # transpiled assets
 lib
+
+# environment variables
+.env
