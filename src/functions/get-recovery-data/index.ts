@@ -5,5 +5,6 @@ export default {
   environment: {
     WHOOP_EMAIL_ADDRESS: '${secrets:email}',
     WHOOP_EMAIL_PASSWORD: '${secrets:password}',
+    DATA_LAKE_BUCKET: '${env:DATA_LAKE_BUCKET}',
   },
 }

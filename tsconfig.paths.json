@@ -5,7 +5,8 @@
       "@functions/*": ["src/functions/*"],
       "@libs/*": ["src/libs/*"],
       "@errors/*": ["src/errors/*"],
-      "@types/*": ["src/types/*"]
+      "@utils/*": ["src/utils/*"],
+      "@custom-types/*": ["src/types/*"]
     }
   }
 }

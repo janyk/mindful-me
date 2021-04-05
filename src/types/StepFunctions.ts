@@ -1,3 +1,5 @@
+import SageMakerTransformJob from './SageMakerTransformJob'
+
 // serverless-step-functions doesn't have a definition file unfortunately
 // defining our own, courtesy of:
 // https://github.com/serverless-operations/serverless-step-functions/issues/370
@@ -15,6 +17,7 @@ type Definition = {
       ResultPath?: string
       Resource?: string | { 'Fn::GetAtt': string[] }
       Iterator?: Definition
+      Parameters?: SageMakerTransformJob
     }
   }
 }
@@ -34,13 +37,24 @@ type ErrorName =
   | 'States.Permissions'
   | string
 
-  export default interface StepFunctions {
-    stateMachines: {
-        [stateMachine: string]: {
-          name: string
-          definition: Definition
-        }
+type StepFunctionEventType = {
+  schedule?: string
+  s3?:
+    | {
+        bucket: string
+        event: string
       }
-      activities?: string[]
-      validate?: boolean
+    | string
+}
+
+export default interface StepFunctions {
+  stateMachines: {
+    [stateMachine: string]: {
+      name: string
+      definition: Definition
+      events?: StepFunctionEventType[]
+    }
   }
+  activities?: string[]
+  validate?: boolean
+}

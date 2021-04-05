@@ -1,6 +1,7 @@
 import { Context, Callback, ScheduledEvent } from 'aws-lambda'
-import RecoveryDataException from '@errors/RecoveryDataException'
-import { handler, RECOVERY_FETCH_EXCEPTION_MESSAGE } from '@functions/get-recovery-data/handler'
+// import RecoveryDataException from '@errors/RecoveryDataException'
+import { handler } from '@functions/get-recovery-data/handler'
+import { mockRecoveryData } from './mock-test-data'
 
 // kind of filthy, but none of these arguments properties are being used so no need to mock them
 const mockContext = ({} as unknown) as Context
@@ -17,17 +18,26 @@ jest.mock('@libs/whoop', () => ({
   })),
 }))
 
+const mockS3PutObject = jest.fn();
+jest.mock("aws-sdk", () => ({
+  S3: function S3() {
+      this.putObject = mockS3PutObject.mockReturnThis();
+      this.promise = jest.fn()
+  },
+}));
+
 describe('Get recovery data lambda', () => {
   afterEach(() => {
     jest.clearAllMocks()
   })
   it('should return the value of getRecoveryData ', async () => {
-    mockGetMostRecentCycle.mockReturnValue(42)
-    
+    mockGetMostRecentCycle.mockReturnValue(mockRecoveryData)
+    console.log(process.env)
     await handler(mockScheduledEvent, mockContext, mockCallback)
-    
+
     expect(mockGetMostRecentCycle).toHaveBeenCalledTimes(1)
-    expect(mockCallback).toBeCalledWith(null, { recoveryData: 42 })
+    expect(mockCallback).toBeCalledWith(null, { recoveryData: mockRecoveryData })
+    expect(mockS3PutObject).toHaveBeenCalled()
   })
 
   it('should return an error instance of RecoveryDataException if there is any error', async () => {
@@ -37,6 +47,6 @@ describe('Get recovery data lambda', () => {
 
     await handler(mockScheduledEvent, mockContext, mockCallback)
     expect(mockGetMostRecentCycle).toHaveBeenCalledTimes(1)
-    expect(mockCallback).toBeCalledWith(new RecoveryDataException(RECOVERY_FETCH_EXCEPTION_MESSAGE))
+    expect(mockCallback).toBeCalledWith(new Error('oof'))
   })
 })

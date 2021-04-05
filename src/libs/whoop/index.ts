@@ -20,7 +20,7 @@ end.setHours(23, 59, 59, 999)
 const localDefaultEndTime = formatToTimeZone(end, format, { timeZone: 'Pacific/Auckland' })
 
 export default class WhoopClient {
-  authUrl: string = `oauth/token`
+  authUrl = `oauth/token`
   userId: string | undefined
   default_params = {
     start: `${localDefaultStartTime}Z`,
@@ -28,8 +28,6 @@ export default class WhoopClient {
   }
 
   api = got.extend({ prefixUrl: 'https://api-7.whoop.com/' })
-
-  constructor() {}
 
   async getCycles(query = this.default_params): Promise<WhoopCycle[]> {
     if (!this.userId) throw new Error("No user id found, please make sure you've logged in")
@@ -57,7 +55,7 @@ export default class WhoopClient {
     return latestCycle
   }
 
-  async login({ password, email }: IWhoopCredentialsPayload) {
+  async login({ password, email }: IWhoopCredentialsPayload): Promise<void> {
     const response = await this.api.post(this.authUrl, {
       json: {
         grant_type: 'password',
