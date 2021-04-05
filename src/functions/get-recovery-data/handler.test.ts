@@ -18,13 +18,13 @@ jest.mock('@libs/whoop', () => ({
   })),
 }))
 
-const mockS3PutObject = jest.fn();
-jest.mock("aws-sdk", () => ({
+const mockS3PutObject = jest.fn()
+jest.mock('aws-sdk', () => ({
   S3: function S3() {
-      this.putObject = mockS3PutObject.mockReturnThis();
-      this.promise = jest.fn()
+    this.putObject = mockS3PutObject.mockReturnThis()
+    this.promise = jest.fn()
   },
-}));
+}))
 
 describe('Get recovery data lambda', () => {
   afterEach(() => {
