@@ -1,7 +1,7 @@
 import { Context, Callback, ScheduledEvent } from 'aws-lambda'
-// import RecoveryDataException from '@errors/RecoveryDataException'
+import { createMock } from 'ts-auto-mock';
 import { handler } from '@functions/get-recovery-data/handler'
-import { mockRecoveryData } from './mock-test-data'
+import { WhoopCycle } from '@libs/whoop/types';
 
 // kind of filthy, but none of these arguments properties are being used so no need to mock them
 const mockContext = ({} as unknown) as Context
@@ -31,8 +31,9 @@ describe('Get recovery data lambda', () => {
     jest.clearAllMocks()
   })
   it('should return the value of getRecoveryData ', async () => {
+    const mockRecoveryData = createMock<WhoopCycle>()
     mockGetMostRecentCycle.mockReturnValue(mockRecoveryData)
-    console.log(process.env)
+
     await handler(mockScheduledEvent, mockContext, mockCallback)
 
     expect(mockGetMostRecentCycle).toHaveBeenCalledTimes(1)
