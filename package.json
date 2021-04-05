@@ -5,8 +5,9 @@
   "main": "serverless.ts",
   "scripts": {
     "test": "jest",
-    "lint": "eslint . --ext js,ts --cache --fix",
+    "lint": "eslint . --ext js,ts --fix",
     "prettier": "prettier --write './**/*.{js,ts}'",
+    "debug": "node --inspect-brk $(which serverless) invoke local -f",
     "typecheck": "tsc --noEmit",
     "prepare": "husky install"
   },
