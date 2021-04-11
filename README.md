@@ -41,6 +41,7 @@ Learn more about using [Sagemaker AutoPilot to train your model](https://docs.aw
 - Sagemaker expects something like a minimum of 500 rows to train model candidates (I didn't quite have that much so did some augmentation.. *cough cough* *copy paste*...)
 - Once done grab your model name, you'll need it for this system configuration
 
+## #Steps
 
 1. Make a copy of `.env.example` and call it `.env`
 2. Supply it with the required configuration
