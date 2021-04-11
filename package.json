@@ -38,7 +38,7 @@
     "json-schema-to-ts": "^1.5.0",
     "prettier": "^2.2.1",
     "serverless": "^2.23.0",
-    "serverless-step-functions": "^2.29.0",
+    "serverless-step-functions": "https://github.com/janyk/serverless-step-functions#4062814e89b612934f91810f71e21e49b969011e",
     "serverless-webpack": "^5.3.5",
     "ts-auto-mock": "^3.1.2",
     "ts-jest": "^26.5.4",

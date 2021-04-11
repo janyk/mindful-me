@@ -6754,10 +6754,9 @@ serialize-javascript@^5.0.1:
   dependencies:
     randombytes "^2.1.0"
 
-serverless-step-functions@^2.29.0:
+"serverless-step-functions@https://github.com/janyk/serverless-step-functions#4062814e89b612934f91810f71e21e49b969011e":
   version "2.29.0"
-  resolved "https://registry.yarnpkg.com/serverless-step-functions/-/serverless-step-functions-2.29.0.tgz#3fcf5f581d34cd1ee207f9e77545f68018fa3040"
-  integrity sha512-4cUJCxKGvRBPdlCW1w/0b+GUUy7kKAyNc9/p5Qus91fhbh9RCLn1e6IhG3xKOUzzl6A8tAsi8PrLwP1PN23GCQ==
+  resolved "https://github.com/janyk/serverless-step-functions#4062814e89b612934f91810f71e21e49b969011e"
   dependencies:
     "@hapi/joi" "^15.0.2"
     asl-validator "^1.8.0"
