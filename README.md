@@ -1,4 +1,4 @@
-# Becoming a more mindful me, with Serverless and Sagemaker
+# Becoming a more mindful me, with Serverless and Sagemaker ✌️
 
 I've always been obsessed with data. In particular health data and using it to help me tweak decisions I make in my life. Over the course of three months I tracked my daily caloric intake using MyFitnessPal whilst concurrently wearing a Whoop fitness tracker. I noticed over this period on days that when my [whoop recovery score](https://support.whoop.com/hc/en-us/articles/360019453454-WHOOP-Recovery) was low, I would tend to eat more food which was high in carbs and sugar. (*I didn't statically verify this..*)
 
@@ -64,7 +64,7 @@ Learn more about using [Sagemaker AutoPilot to train your model](https://docs.aw
    ```bash
    sls deploy --aws-profile your_profile
    ```
-4. Profit
+4. Profit 💰
 ### Notes:
 
 I utilised [serverless-step-functions](https://github.com/serverless-operations/serverless-step-functions) to orchestrate my stepfunctions. A limitation of this library is that it doesn't yet support compilation of sagemaker permissions for the IAM role it produces. 
