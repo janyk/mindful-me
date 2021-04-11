@@ -1,95 +1,78 @@
-# Serverless - AWS Node.js Typescript
+# Becoming a more mindful me, with Serverless and Sagemaker
 
-This project has been generated using the `aws-nodejs-typescript` template from the [Serverless framework](https://www.serverless.com/).
+I've always been obsessed with data. In particular health data and using it to help me tweak decisions I make in my life. Over the course of three months I tracked my daily caloric intake using MyFitnessPal whilst concurrently wearing a Whoop fitness tracker. I noticed over this period on days that when my [whoop recovery score](https://support.whoop.com/hc/en-us/articles/360019453454-WHOOP-Recovery) was low, I would tend to eat more food which was high in carbs and sugar. *I didn't statically verify this*
 
-For detailed instructions, please refer to the [documentation](https://www.serverless.com/framework/docs/providers/aws/).
+I figured, if I can predict this, maybe I can prompt myself in the mornings to be more mindful of what I eat.
 
-## Installation/deployment instructions
+This project uses those two datasets to **predict** my daily caloric intake based on my recovery and heart rate data. 
 
-Depending on your preferred package manager, follow the instructions below to deploy your project.
+**Here's a high level view of how it works..**
 
-> **Requirements**: NodeJS `lts/fermium (v.14.15.0)`. If you're using [nvm](https://github.com/nvm-sh/nvm), run `nvm use` to ensure you're using the same Node version in local and in your lambda's runtime.
+![Serverless Airline Architecture](./assets/mindful-me-arch.jpg)
 
-### Using NPM
+1. Get my recovery data from Whoop for yesterday
+2. Start a sagemaker batch transform job on that data
+3. Read prediction and nudge me if it looks like i'll go above my ideal calories..
 
-- Run `npm i` to install the project dependencies
-- Run `npx sls deploy` to deploy this stack to AWS
+## Getting started for your own use
+This project has a few dependencies and assumptions
 
-### Using Yarn
+- A Whoop membership
+- A trained sagemaker model
+- Your all setup up to deploy to AWS via [serverless.com](https://www.serverless.com/)
+  - [AWS intro guide](https://www.serverless.com/framework/docs/providers/aws/guide/intro/)
+  - [Deployment guide](https://www.serverless.com/framework/docs/providers/aws/guide/deploying)
+- [A verified SES email](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/verify-email-addresses.html)
 
-- Run `yarn` to install the project dependencies
-- Run `yarn sls deploy` to deploy this stack to AWS
 
-## Test your service
+### A note on Sagemaker
+A critical assumption is that you have a sagemaker model trained on the following fields, to **predict** kilojoule intake. 
 
-This template contains a single lambda function triggered by an HTTP request made on the provisioned API Gateway REST API `/hello` route with `POST` method. The request body must be provided as `application/json`. The body structure is tested by API Gateway against `src/functions/hello/schema.ts` JSON-Schema definition: it must contain the `name` property.
 
-- requesting any other path than `/hello` with any other method than `POST` will result in API Gateway returning a `403` HTTP error code
-- sending a `POST` request to `/hello` with a payload **not** containing a string property named `name` will result in API Gateway returning a `400` HTTP error code
-- sending a `POST` request to `/hello` with a payload containing a string property named `name` will result in API Gateway returning a `200` HTTP status code with a message saluting the provided name and the detailed event processed by the lambda
+> rMSSD, resting_hr, recovery_score, n_naps, sleep_need_baseline, sleep_debt,sleep_need_strain, sleep_need_total, sleep_quality_duration, avg_hr, max_hr
 
-> :warning: As is, this template, once deployed, opens a **public** endpoint within your AWS account resources. Anybody with the URL can actively execute the API Gateway endpoint and the corresponding lambda. You should protect this endpoint with the authentication method of your choice.
+This might be a bit tricky initially, but AWS actually provide an "AutoML" solution that do all the hard work for you. The guides are great and once your know how to do its incredible how quickly you can get your own model 🧠 
 
-### Locally
+Learn more about using [Sagemaker AutoPilot to train your model](https://docs.aws.amazon.com/sagemaker/latest/dg/autopilot-videos.html)
 
-In order to test the hello function locally, run the following command:
+**Note:**
 
-- `npx sls invoke local -f hello --path src/functions/hello/mock.json` if you're using NPM
-- `yarn sls invoke local -f hello --path src/functions/hello/mock.json` if you're using Yarn
+- Make sure your model expects csv input in the order specified above
+- Sagemaker expects something like a minimum of 500 rows to train model candidates (I didn't quite have that much so did some augmentation.. *cough cough* *copy paste*...)
+- Once done grab your model name, you'll need it for this system configuration
 
-Check the [sls invoke local command documentation](https://www.serverless.com/framework/docs/providers/aws/cli-reference/invoke-local/) for more information.
 
-### Remotely
+1. Make a copy of `.env.example` and call it `.env`
+2. Supply it with the required configuration
 
-Copy and replace your `url` - found in Serverless `deploy` command output - and `name` parameter in the following `curl` command in your terminal or in Postman to test your newly deployed application.
+| Variable       | Notes |
+| ------------- |:-------------:|
+| ORG     |  Name of your serverless org, [found here](https://app.serverless.com/your_org/settings/team) |
+| APP      | The name you want to call your app|   
+| SERVICE | The name you want to call your service      | 
+| REGION | AWS region      | 
+| WHOOP_EMAIL | Email used for whoop subscription      | 
+| WHOOP_PASSWORD | Password used for whoop subscription      | 
+| TIMEZONE | Prefered timezone, used to query whoop API which recognises an offset(?)|
+| NOTIFICATION_ADDRESS | Verified SES address you want to send and recieve your nudge from |
+|MODEL_NAME|The name of your trained sagemaker model|
+|DATA_LAKE_BUCKET|Globally unique bucket used for data processing|
+|CALORIE_LIMIT|Number of calories you'd like to stay under, defaults to **10000**|
 
-```
-curl --location --request POST 'https://myApiEndpoint/dev/hello' \
---header 'Content-Type: application/json' \
---data-raw '{
-    "name": "Frederic"
-}'
-```
+3. Deploy your system via serverless
+   ```bash
+   sls deploy --aws-profile your_profile
+   ```
+4. Profit
+### Notes:
 
-## Template features
+I utilised [serverless-step-functions](https://github.com/serverless-operations/serverless-step-functions) to orchestrate my stepfunctions. A limitation of this library is that it doesn't yet support compilation of sagemaker permissions for the IAM role it produces. 
 
-### Project structure
+As a result, i've created a [fork to enable this](https://github.com/janyk/serverless-step-functions/commit/4062814e89b612934f91810f71e21e49b969011e) that mindful me uses, and created a [pull request](https://github.com/serverless-operations/serverless-step-functions/pull/413) which hopefully will get some help some other folks out.
 
-The project code base is mainly located within the `src` folder. This folder is divided in:
-
-- `functions` - containing code base and configuration for your lambda functions
-- `libs` - containing shared code base between your lambdas
-
-```
-.
-├── src
-│   ├── functions               # Lambda configuration and source code folder
-│   │   ├── hello
-│   │   │   ├── handler.ts      # `Hello` lambda source code
-│   │   │   ├── index.ts        # `Hello` lambda Serverless configuration
-│   │   │   ├── mock.json       # `Hello` lambda input parameter, if any, for local invocation
-│   │   │   └── schema.ts       # `Hello` lambda input event JSON-Schema
-│   │   │
-│   │   └── index.ts            # Import/export of all lambda configurations
-│   │
-│   └── libs                    # Lambda shared code
-│       └── apiGateway.ts       # API Gateway specific helpers
-│       └── handlerResolver.ts  # Sharable library for resolving lambda handlers
-│       └── lambda.ts           # Lambda middleware
-│
-├── package.json
-├── serverless.ts               # Serverless service file
-├── tsconfig.json               # Typescript compiler configuration
-├── tsconfig.paths.json         # Typescript paths
-└── webpack.config.js           # Webpack configuration
-```
-
-### 3rd party libraries
-
-- [json-schema-to-ts](https://github.com/ThomasAribart/json-schema-to-ts) - uses JSON-Schema definitions used by API Gateway for HTTP request validation to statically generate TypeScript types in your lambda's handler code base
-- [middy](https://github.com/middyjs/middy) - middleware engine for Node.Js lambda. This template uses [http-json-body-parser](https://github.com/middyjs/middy/tree/master/packages/http-json-body-parser) to convert API Gateway `event.body` property, originally passed as a stringified JSON, to its corresponding parsed object
-- [@serverless/typescript](https://github.com/serverless/typescript) - provides up-to-date TypeScript definitions for your `serverless.ts` service file
-
-### Advanced usage
-
-Any tsconfig.json can be used, but if you do, set the environment variable `TS_NODE_CONFIG` for building the application, eg `TS_NODE_CONFIG=./tsconfig.app.json npx serverless webpack`
+### TODO: 
+Quite a lot.. MVP is working great, but I can do better
+- Decrease scope of IAM permissions
+- Use stepfunctions to handle failure flows and potentially retries
+- Finish test coverage
+- Make README more readable and intuitive
