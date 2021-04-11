@@ -7,17 +7,20 @@ interface IWhoopCredentialsPayload {
   password: string
 }
 
-// getting default query parameters based on my timezone... could extract this to lambda and provide an interface for it
+const tz = process.env.TIMEZONE || 'Pacific/Auckland'
+
+// default query parameters for yesterday - defaults to NZ timezone
 const format = 'YYYY-MM-DDTHH:mm:ss.SSS'
 const start = new Date()
 start.setDate(start.getDate() - 1)
 start.setHours(0, 0, 0, 1)
-const localDefaultStartTime = formatToTimeZone(start, format, { timeZone: 'Pacific/Auckland' })
+
+const localDefaultStartTime = formatToTimeZone(start, format, { timeZone: tz })
 
 const end = new Date()
 end.setDate(end.getDate() - 1)
 end.setHours(23, 59, 59, 999)
-const localDefaultEndTime = formatToTimeZone(end, format, { timeZone: 'Pacific/Auckland' })
+const localDefaultEndTime = formatToTimeZone(end, format, { timeZone: tz })
 
 export default class WhoopClient {
   authUrl = `oauth/token`
