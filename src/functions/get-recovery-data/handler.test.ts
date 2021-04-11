@@ -1,7 +1,7 @@
 import { Context, Callback, ScheduledEvent } from 'aws-lambda'
-import { createMock } from 'ts-auto-mock';
+import { createMock } from 'ts-auto-mock'
 import { handler } from '@functions/get-recovery-data/handler'
-import { WhoopCycle } from '@libs/whoop/types';
+import { WhoopCycle } from '@libs/whoop/types'
 
 // kind of filthy, but none of these arguments properties are being used so no need to mock them
 const mockContext = ({} as unknown) as Context

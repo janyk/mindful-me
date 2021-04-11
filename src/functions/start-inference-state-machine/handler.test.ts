@@ -5,7 +5,7 @@ import { getJobName, getProcessedDirectory, handler } from '@functions/start-inf
 const mockContext = ({} as unknown) as Context
 
 const mockS3EventRecord = createMock<S3EventRecord>({
-  eventTime: new Date().toUTCString(),
+  eventTime: '2021-04-10T23:56:57.862Z',
   s3: {
     object: {
       key: 'raw/myfile.csv',
@@ -33,6 +33,11 @@ jest.mock('aws-sdk', () => ({
 }))
 
 describe('Get recovery data lambda', () => {
+  beforeEach(() => {
+    // uuidv4 function in the handler utilises Math.random for its unique value
+    // mocking so our expected params are consistent
+    jest.spyOn(global.Math, 'random').mockReturnValue(0.123456789)
+  })
   afterEach(() => {
     jest.clearAllMocks()
   })
@@ -42,7 +47,7 @@ describe('Get recovery data lambda', () => {
     expect(mockStartExecution).toHaveBeenCalledWith({
       stateMachineArn: process.env.STATE_MACHINE_ARN,
       input: JSON.stringify({
-        job_name: `${getJobName(mockS3EventRecord.eventTime)}-job-test-now`,
+        job_name: `${getJobName()}`,
         input_file_path: `s3://${process.env.DATA_LAKE_BUCKET}/${mockS3EventRecord.s3.object.key}`,
         output_file_path: `s3://${process.env.DATA_LAKE_BUCKET}/${getProcessedDirectory(
           mockS3EventRecord.s3.object.key,
