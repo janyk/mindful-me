@@ -2,6 +2,7 @@ import SeverlessConfig from '@custom-types/SeverlessConfig'
 import getRecoveryData from '@functions/get-recovery-data'
 import logResult from '@functions/log-result'
 import startInferenceStateMachine from '@functions/start-inference-state-machine'
+import processPredictionResult from '@functions/process-prediction-result'
 
 const serverlessConfiguration: SeverlessConfig = {
   org: '${env:ORG}',
@@ -30,6 +31,7 @@ const serverlessConfiguration: SeverlessConfig = {
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
     },
+    // TODO: move statements to lambdas, instead globally applied..
     iamRoleStatements: [
       {
         Effect: 'Allow',
@@ -38,7 +40,13 @@ const serverlessConfiguration: SeverlessConfig = {
       },
       {
         Effect: 'Allow',
-        Action: ['s3:putObject'],
+        Action: ['s3:putObject', 's3:getObject'],
+        // TODO: scope down to datalake bucket
+        Resource: ['*'],
+      },
+      {
+        Effect: 'Allow',
+        Action: ['ses:SendEmail', 'ses:SendRawEmail'],
         Resource: ['*'],
       },
     ],
@@ -53,8 +61,8 @@ const serverlessConfiguration: SeverlessConfig = {
       },
     },
   },
-  // import the function via paths
-  functions: { getRecoveryData, logResult, startInferenceStateMachine },
+  functions: { getRecoveryData, logResult, startInferenceStateMachine, processPredictionResult },
+  // TODO: configure graceful error handling (exponential backoff or other means) for state machines
   stepFunctions: {
     stateMachines: {
       GetRecoveryData: {
