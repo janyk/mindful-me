@@ -1,12 +1,12 @@
 # Becoming a more mindful me, with Serverless and Sagemaker
 
-I've always been obsessed with data. In particular health data and using it to help me tweak decisions I make in my life. Over the course of three months I tracked my daily caloric intake using MyFitnessPal whilst concurrently wearing a Whoop fitness tracker. I noticed over this period on days that when my [whoop recovery score](https://support.whoop.com/hc/en-us/articles/360019453454-WHOOP-Recovery) was low, I would tend to eat more food which was high in carbs and sugar. *I didn't statically verify this*
+I've always been obsessed with data. In particular health data and using it to help me tweak decisions I make in my life. Over the course of three months I tracked my daily caloric intake using MyFitnessPal whilst concurrently wearing a Whoop fitness tracker. I noticed over this period on days that when my [whoop recovery score](https://support.whoop.com/hc/en-us/articles/360019453454-WHOOP-Recovery) was low, I would tend to eat more food which was high in carbs and sugar. (*I didn't statically verify this..*)
 
-I figured, if I can predict this, maybe I can prompt myself in the mornings to be more mindful of what I eat.
+I figured, if I can predict my caloric intake, maybe I can prompt myself in the mornings to be more mindful of what I eat.
 
-This project uses those two datasets to **predict** my daily caloric intake based on my recovery and heart rate data. 
+This project uses those two datasets to **predict my daily caloric intake based on my recovery and heart rate data.**
 
-**Here's a high level view of how it works..**
+## Here's a high level view of how it works..
 
 ![Serverless Airline Architecture](./assets/mindful-me-arch.jpg)
 
@@ -70,8 +70,11 @@ I utilised [serverless-step-functions](https://github.com/serverless-operations/
 
 As a result, i've created a [fork to enable this](https://github.com/janyk/serverless-step-functions/commit/4062814e89b612934f91810f71e21e49b969011e) that mindful me uses, and created a [pull request](https://github.com/serverless-operations/serverless-step-functions/pull/413) which hopefully will get some help some other folks out.
 
+I've also since had the opportunity to do some research since which makes me more interested in my blood sugars, than Calories In / Calories Out - stay tuned..
+
 ### TODO: 
-Quite a lot.. MVP is working great, but I can do better
+MVP is working great, but I can tidy things up a bit
+- Extend configuration to accept cron config
 - Decrease scope of IAM permissions
 - Use stepfunctions to handle failure flows and potentially retries
 - Finish test coverage
