@@ -1,0 +1,5 @@
+process.env.DATA_LAKE_BUCKET = 'data-lake-bucket'
+process.env.STATE_MACHINE_ARN = 'state-machine-arn'
+process.env.TIMEZONE='Pacific/Auckland'
+process.env.WHOOP_EMAIL_ADDRESS = 'your@email.com'
+process.env.WHOOP_PASSWORD = 'your_password'
