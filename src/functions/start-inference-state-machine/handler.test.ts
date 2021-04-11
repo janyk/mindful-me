@@ -38,6 +38,7 @@ describe('Get recovery data lambda', () => {
     // mocking so our expected params are consistent
     jest.spyOn(global.Math, 'random').mockReturnValue(0.123456789)
   })
+
   afterEach(() => {
     jest.clearAllMocks()
   })
