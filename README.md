@@ -77,5 +77,6 @@ MVP is working great, but I can tidy things up a bit
 - Extend configuration to accept cron config
 - Decrease scope of IAM permissions
 - Use stepfunctions to handle failure flows and potentially retries
+  - Remove left over lambdas from state machines
 - Finish test coverage
 - Make README more readable and intuitive
