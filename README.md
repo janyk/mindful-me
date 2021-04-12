@@ -33,12 +33,14 @@ A critical assumption is that you have a sagemaker model trained on the followin
 
 This might be a bit tricky initially, but AWS actually provide an "AutoML" solution that does all the hard work for you. The guides are great and once your know how to do it, it's incredible how quickly you can get your own model trained 🧠 
 
+It's important to mention this prediction and model is quite naiive. As my habits change, its definitely going to lose its robustness. Not to mention, this is quite a narrow view on the factors influencing my eating - i'd imagine theres a lot more feature engineering and context one could build into a system like this.
+
 Learn more about using [Sagemaker AutoPilot to train your model](https://docs.aws.amazon.com/sagemaker/latest/dg/autopilot-videos.html)
 
 **Note:**
 
 - Make sure your model expects csv input in the order specified above
-- Sagemaker expects something like a minimum of 500 rows to train model candidates (I didn't quite have that much so did some augmentation.. *cough cough* *copy paste*... )
+- Sagemaker expects something like a minimum of 500 rows to train model candidates (I didn't quite have that much so did some augmentation.. *cough cough* *copy paste*... #overfitting)
 - Once done grab your model name, you'll need it for this system configuration
 
 ### Steps
