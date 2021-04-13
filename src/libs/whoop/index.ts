@@ -12,11 +12,11 @@ const tz = process.env.TIMEZONE || 'Pacific/Auckland'
 // default query parameters for today - defaults to NZ timezone
 const format = 'YYYY-MM-DDTHH:mm:ss.SSS'
 const start = new Date()
-start.setHours(1, 0, 0, 0)
+start.setUTCHours(1, 0, 0, 0)
 const localDefaultStartTime = formatToTimeZone(start, format, { timeZone: tz })
 
 const end = new Date()
-end.setHours(23, 59, 59, 1)
+end.setUTCHours(23, 59, 59, 1)
 const localDefaultEndTime = formatToTimeZone(end, format, { timeZone: tz })
 
 export default class WhoopClient {

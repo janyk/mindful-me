@@ -1,4 +1,4 @@
-import SeverlessConfig from '@custom-types/SeverlessConfig'
+import SeverlessConfig, { Region } from '@custom-types/SeverlessConfig'
 import getRecoveryData from '@functions/get-recovery-data'
 import logResult from '@functions/log-result'
 import startInferenceStateMachine from '@functions/start-inference-state-machine'
@@ -19,10 +19,11 @@ const serverlessConfiguration: SeverlessConfig = {
   plugins: ['serverless-webpack', 'serverless-step-functions'],
   provider: {
     name: 'aws',
-    // region doesn't play nicely with environment variables..
-    // could utilise a deep omit helper instead of this nasty casting..
-    // just picking a random region from https://github.com/serverless/typescript/blob/master/index.d.ts#L853
-    region: '${env:REGION}' as 'ap-southeast-2',
+    /* Not a big fan of casting,
+     * but environment variables come as
+     * strings so need to cast to play nice, or relax the type on ServerlessConfig
+     */
+    region: '${env:REGION}' as Region,
     runtime: 'nodejs14.x',
     apiGateway: {
       minimumCompressionSize: 1024,
@@ -69,7 +70,7 @@ const serverlessConfiguration: SeverlessConfig = {
         name: 'GetRecoveryData',
         events: [
           {
-            schedule: 'cron(30 19 * * ? *)',
+            schedule: 'cron(00 21 * * ? *)',
           },
         ],
         definition: {
