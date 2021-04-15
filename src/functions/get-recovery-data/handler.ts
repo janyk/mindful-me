@@ -1,14 +1,13 @@
 import { Context, Callback, ScheduledEvent, ScheduledHandler } from 'aws-lambda'
 import * as AWS from 'aws-sdk'
-import { formatToTimeZone } from 'date-fns-timezone'
 import WhoopClient from '@libs/whoop'
 import { WhoopCycle } from '@libs/whoop/types'
+import { clock } from '@utils/dates'
 import 'source-map-support/register'
 
 const email = process.env.WHOOP_EMAIL_ADDRESS
 const password = process.env.WHOOP_EMAIL_PASSWORD
 const Bucket = process.env.DATA_LAKE_BUCKET
-const tz = process.env.TIMEZONE || 'Pacific/Auckland'
 
 export const handler: ScheduledHandler = async (
   _event: ScheduledEvent,
@@ -62,10 +61,4 @@ export const getTabularRecoveryData = ({
   return `${heartRateVariabilityRmssd},${restingHeartRate},${score},${naps},${baseline},${debt},${strain},${total},${qualityDuration},${averageHeartRate},${maxHeartRate}`
 }
 
-export const getFileKey = (): string => {
-  const startDate = new Date()
-  startDate.setDate(startDate.getDate() - 1)
-  startDate.setHours(0, 0, 0, 1)
-  // shouldn't really be using client timezone here, once we've queried WHOOP api we can just use UTC for system time
-  return `raw/${formatToTimeZone(startDate, 'YYYY-MM-DDTHH:mm:ss.SSS', { timeZone: tz })}.csv`
-}
+export const getFileKey = (): string => `raw/${clock.now.toISOString()}.csv`

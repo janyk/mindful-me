@@ -6,8 +6,9 @@ describe('WhoopClient', () => {
   it('should throw an error if attempting to get cycles without logging in', async () => {
     expect.assertions(1)
     whoopClient = new WhoopClient()
+
     try {
-      await whoopClient.getCycles()
+      await whoopClient.getMostRecentCycle()
     } catch (e) {
       expect(e.message).toEqual("No user id found, please make sure you've logged in")
     }
@@ -20,8 +21,10 @@ describe('WhoopClient', () => {
   it('should get recovery data', async () => {
     expect.assertions(1)
     whoopClient = new WhoopClient()
+
     await whoopClient.login({ password: process.env.WHOOP_PASSWORD, email: process.env.WHOOP_EMAIL_ADDRESS })
-    const data = await whoopClient.getCycles()
+
+    const data = await whoopClient.getMostRecentCycle()
     expect(data).toBeTruthy()
   })
 })

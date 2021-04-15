@@ -5,6 +5,7 @@ module.exports = {
   moduleNameMapper: {
     '@functions(.*)$': '<rootDir>/src/functions/$1',
     '@libs(.*)$': '<rootDir>/src/libs/$1',
+    '@utils(.*)$': '<rootDir>/src/utils/$1',
     '@errors(.*)$': '<rootDir>/src/errors/$1',
   },
   transform: {

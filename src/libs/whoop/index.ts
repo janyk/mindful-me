@@ -1,35 +1,30 @@
 import got, { Response } from 'got'
-import { formatToTimeZone } from 'date-fns-timezone'
+import { clock, sortByDateAttr } from '@utils/dates'
 import { AuthResult, WhoopCycle } from './types'
 
-interface IWhoopCredentialsPayload {
+const tz = process.env.TIMEZONE || 'Pacific/Auckland'
+
+type WhoopCredentialsPayload = {
   email: string
   password: string
 }
 
-const tz = process.env.TIMEZONE || 'Pacific/Auckland'
-
-// default query parameters for today - defaults to NZ timezone
-const format = 'YYYY-MM-DDTHH:mm:ss.SSS'
-const start = new Date()
-start.setUTCHours(1, 0, 0, 0)
-const localDefaultStartTime = formatToTimeZone(start, format, { timeZone: tz })
-
-const end = new Date()
-end.setUTCHours(23, 59, 59, 1)
-const localDefaultEndTime = formatToTimeZone(end, format, { timeZone: tz })
+type CyclesQuery = {
+  start: string
+  end: string
+}
 
 export default class WhoopClient {
   authUrl = `oauth/token`
   userId: string | undefined
-  default_params = {
-    start: `${localDefaultStartTime}Z`,
-    end: `${localDefaultEndTime}Z`,
-  }
 
   api = got.extend({ prefixUrl: 'https://api-7.whoop.com/' })
 
-  async getCycles(query = this.default_params): Promise<WhoopCycle[]> {
+  /* Gets cycles for a given time period
+   * @param {string} start - start of date range to query whoop for cycles in ISO Format
+   * @param {string} end - end of date range to query whoop for cycles in ISO Format
+   */
+  async getCycles(query: CyclesQuery): Promise<WhoopCycle[]> {
     if (!this.userId) throw new Error("No user id found, please make sure you've logged in")
 
     const { statusCode, body: cycles } = ((await this.api(`users/${this.userId}/cycles`, {
@@ -45,17 +40,27 @@ export default class WhoopClient {
   }
 
   async getMostRecentCycle(): Promise<WhoopCycle> {
-    // big assumption about Whoop API made here.. should probably sort the cycles by day attribute
-    const [latestCycle] = await this.getCycles()
+    const start = clock.mostRecentMidnight(tz).toISOString()
+    const end = clock.nextMidnight(tz).toISOString()
+
+    const cycles = await this.getCycles({ start, end })
+
+    // kind of fumbling in the dark since theres no documentation on whoops response payload...
+    // but if upper bound is null, then it doesn't exist and assuming is therefore the current cycle(?)
+    // else sort cycles by their predicted end..
+    let latestCycle = cycles.find((cycle) => cycle.during.upper === null)
+    latestCycle = latestCycle ?? sortByDateAttr<WhoopCycle>(cycles, 'predictedEnd')[0]
 
     if (!latestCycle) {
-      throw new Error('No cycle found for yesterday.')
+      // sort of aggressive to throw an error if none found
+      // but my assumption is there is always one for the past few days
+      throw new Error(`No cycle found for ${start} through to ${end}`)
     }
 
     return latestCycle
   }
 
-  async login({ password, email }: IWhoopCredentialsPayload): Promise<void> {
+  async login({ password, email }: WhoopCredentialsPayload): Promise<void> {
     const response = await this.api.post(this.authUrl, {
       json: {
         grant_type: 'password',
