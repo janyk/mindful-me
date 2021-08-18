@@ -13,7 +13,7 @@ export const handler: ScheduledHandler = async (
   _event: ScheduledEvent,
   _context: Context,
   callback: Callback,
-): Promise<any> => {
+): Promise<void> => {
   try {
     const s3 = new AWS.S3()
     const recoveryData = await getRecoveryData()

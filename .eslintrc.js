@@ -25,6 +25,6 @@ module.exports = {
     ecmaVersion: 2019,
   },
   rules: {
-    '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/no-explicit-any': 'on',
   },
 }

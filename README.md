@@ -8,7 +8,7 @@ This project uses those two datasets to **predict my daily caloric intake based 
 
 ## Here's a high level view of how it works..
 
-![Serverless Airline Architecture](./assets/mindful-me-arch.jpg)
+![Mindful Me Architecture](./assets/mindful-me-arch.jpg)
 
 1. Get my recovery data from Whoop for yesterday
 2. Start a sagemaker batch transform job on that data
@@ -22,7 +22,7 @@ This project has a few dependencies and assumptions
 - Your all setup up to deploy to AWS via [serverless.com](https://www.serverless.com/)
   - [AWS intro guide](https://www.serverless.com/framework/docs/providers/aws/guide/intro/)
   - [Deployment guide](https://www.serverless.com/framework/docs/providers/aws/guide/deploying)
-- [A verified SES email](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/verify-email-addresses.html)
+- [A verified email with SES](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/verify-email-addresses.html)
 
 
 ### A note on Sagemaker
@@ -40,7 +40,7 @@ Learn more about using [Sagemaker AutoPilot to train your model](https://docs.aw
 **Note:**
 
 - Make sure your model expects csv input in the order specified above
-- Sagemaker expects something like a minimum of 500 rows to train model candidates (I didn't quite have that much so did some augmentation.. *cough cough* *copy paste*... #overfitting)
+- Sagemaker expects something like a minimum of 500 rows to train model candidates (I didn't quite have that much so did some augmentation.. *cough cough* *copy paste*... )
 - Once done grab your model name, you'll need it for this system configuration
 
 ### Steps
@@ -56,7 +56,7 @@ Learn more about using [Sagemaker AutoPilot to train your model](https://docs.aw
 | REGION | AWS region      | 
 | WHOOP_EMAIL | Email used for whoop subscription      | 
 | WHOOP_PASSWORD | Password used for whoop subscription      | 
-| TIMEZONE | Prefered timezone, used to query whoop API which recognises an offset(?)|
+| TIMEZONE | Prefered timezone, used to query whoop API which recognises an offset|
 | NOTIFICATION_ADDRESS | Verified SES address you want to send and recieve your nudge from |
 |MODEL_NAME|The name of your trained sagemaker model|
 |DATA_LAKE_BUCKET|Globally unique bucket used for data processing|
@@ -68,14 +68,23 @@ Learn more about using [Sagemaker AutoPilot to train your model](https://docs.aw
    ```
 4. Profit 💰
 
-Your system will kick off at 730pm UTC time every day and email you if it thinks your going to consume more calories than you specify, enjoy!
+Your system will kick off at 9pm UTC time every day and email you if it thinks your going to consume more calories than you specify, enjoy!
 ### Notes:
 
 I utilised [serverless-step-functions](https://github.com/serverless-operations/serverless-step-functions) to orchestrate my stepfunctions. A limitation of this library is that it doesn't yet support compilation of sagemaker permissions for the IAM role it produces. 
 
-As a result, i've created a [fork to enable this](https://github.com/janyk/serverless-step-functions/commit/4062814e89b612934f91810f71e21e49b969011e) that mindful me uses, and created a [pull request](https://github.com/serverless-operations/serverless-step-functions/pull/413) which hopefully will get some help some other folks out.
+As a result, i've created a [fork to enable this](https://github.com/janyk/serverless-step-functions/commit/4062814e89b612934f91810f71e21e49b969011e) that mindful me uses, and created a [pull request](https://github.com/serverless-operations/serverless-step-functions/pull/413) which hopefully will help some other folks out.
 
 I've also since had the opportunity to do some research since which makes me more interested in my blood sugars, than Calories In / Calories Out - stay tuned..
+
+
+## Executing the test suite
+Our test suite runs in a pre-commit hook. Some of the tests integrate with Whoops API which requires valid auth credentials.
+
+To avoid committing sensitive information, we have provided setEnvVars.example.js as a templat. For the test suite to run successfully you will need to create a new file, `.jest/setEnvVars.js` and add a valid set of Whoop credentials to the corresponding variables. This file is untracked.
+
+If this was a more legit operation with a test user, we might defer "integration" tests that require sensitive keys to run on a build machine, use SOPs or even set up a secrets manager.
+
 
 ### TODO: 
 MVP is working great, but I can tidy things up a bit

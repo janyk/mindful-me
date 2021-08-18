@@ -11,7 +11,7 @@ const bucket = process.env.DATA_LAKE_BUCKET
  * 2. Calculates job parameters for the sagemaker transform job based on eventime and input file data
  * 3. Starts another statemachine with the parameters for the job
  */
-export const handler: S3Handler = async (event: S3Event, _context: Context, callback: Callback): Promise<any> => {
+export const handler: S3Handler = async (event: S3Event, _context: Context, callback: Callback): Promise<void> => {
   try {
     const stepfunctions = new AWS.StepFunctions()
     const {

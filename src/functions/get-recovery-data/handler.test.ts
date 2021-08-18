@@ -41,7 +41,7 @@ describe('Get recovery data lambda', () => {
     expect(mockS3PutObject).toHaveBeenCalled()
   })
 
-  it('should return an error instance of RecoveryDataException if there is any error', async () => {
+  it('should return call the callback with an error if there is any error', async () => {
     mockGetMostRecentCycle.mockImplementationOnce(() => {
       throw new Error('oof')
     })
