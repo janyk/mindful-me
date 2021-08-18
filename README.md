@@ -81,7 +81,7 @@ I've also since had the opportunity to do some research since which makes me mor
 ## Executing the test suite
 Our test suite runs in a pre-commit hook. Some of the tests integrate with Whoops API which requires valid auth credentials.
 
-To avoid committing sensitive information, we have provided setEnvVars.example.js as a templat. For the test suite to run successfully you will need to create a new file, `.jest/setEnvVars.js` and add a valid set of Whoop credentials to the corresponding variables. This file is untracked.
+To avoid committing sensitive information, we have provided setEnvVars.example.js as a template. For the test suite to run successfully you will need to create a new file, `.jest/setEnvVars.js` and add a valid set of Whoop credentials to the corresponding variables. This file is untracked.
 
 If this was a more legit operation with a test user, we might defer "integration" tests that require sensitive keys to run on a build machine, use SOPs or even set up a secrets manager.
 
