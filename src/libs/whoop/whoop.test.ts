@@ -18,13 +18,15 @@ describe('WhoopClient', () => {
     requires a valid email and password for whoop to be added to .jest/setEnvVars.js 
     as this actually calls the whoop API
   */
-  it('should get recovery data', async () => {
-    expect.assertions(1)
+  it('should get recovery data for atleast one day', async () => {
+    expect.assertions(3)
     whoopClient = new WhoopClient()
 
     await whoopClient.login({ password: process.env.WHOOP_PASSWORD, email: process.env.WHOOP_EMAIL_ADDRESS })
 
     const data = await whoopClient.getMostRecentCycle()
-    expect(data).toBeTruthy()
+    expect(data?.days?.length).toBeGreaterThanOrEqual(1)
+    expect(data?.recovery.heartRateVariabilityRmssd).toBeTruthy()
+    expect(data?.sleep.id).toBeTruthy()
   })
 })
